@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status - {{ device_name }}</title>
+    <style>
+        body { background-color: #000000; color: #8b0000; text-align: center; font-family: Arial, sans-serif; }
+        .loader { 
+            border: 8px solid #000; 
+            border-top: 8px solid #8b0000; 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            animation: spin 1s linear infinite; 
+            display: inline-block; 
+            margin-top: 20px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .hidden { display: none; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        function startChecking() {
+            fetch("/functions/get_rdp_status/{{ device_name }}")
+                .then(response => response.json())
+                .then(data => console.log(data.message))
+                .catch(error => console.error("Error starting status check:", error));
+        }
+
+        socket.on("device_online", function(data) {
+            if (data.device_name === "{{ device_name }}") {
+                document.getElementById("status").innerHTML = "{{ device_name }} is ready for RDP!";
+                document.getElementById("loader").classList.add("hidden");
+            }
+        });
+
+        window.onload = startChecking;
+    </script>
+</head>
+<body>
+    <h1>Waiting for {{ device_name }} to become ready...</h1>
+    <div id="loader" class="loader"></div>
+    <p id="status"></p>
+</body>
+</html>
