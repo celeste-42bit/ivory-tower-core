@@ -15,6 +15,10 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
+@app.route("/announcements")
+def announcements():
+    return render_template("blog.html")
+
 
 @app.route("/functions/wol/<device_name>", methods=["GET"])
 def wol(device_name):
